@@ -16,6 +16,10 @@ jobs:
       run: |
         pip install black
         black --check --diff ./
+    - name: Check import sorting
+      run: |
+        pip install isort
+        isort ./ --check-only
   lint:
     name: Lint
     runs-on: ubuntu-latest
