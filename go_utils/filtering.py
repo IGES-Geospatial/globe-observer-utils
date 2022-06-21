@@ -18,6 +18,41 @@ Geolocational data may not be the most accurate. As a result, this runs a relati
 """
 
 
+def filter_out_entries(df, mask, include, inplace):
+    """
+    Filters out or selects target entries of a DataFrame using a mask. Mainly serves as a utility function for the other filters.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame to filter
+    mask : 1D np.array of bools
+        The mask to apply to the DataFrame
+    include : bool
+        True to only select the masked values False to exclude the masked values
+    inplace : bool
+        Whether to return a new DataFrame. If True then no DataFrame copy is not returned and the operation is performed in place.
+
+    Returns
+    -------
+    pd.DataFrame or None
+        A DataFrame with the mask filter applied. If `inplace=True` it returns None.
+    """
+    if include:
+        final_mask = mask
+    else:
+        final_mask = ~mask
+    filtered_df = df[final_mask]
+    if not inplace:
+        return filtered_df
+    else:
+        df.mask(~df.isin(filtered_df), inplace=True)
+        df.dropna(how="all", inplace=True)
+        for col in df.columns:
+            if df[col].dtype != filtered_df[col].dtype:
+                df[col] = df[col].astype(filtered_df[col].dtype)
+
+
 def filter_invalid_coords(
     df, latitude_col, longitude_col, inclusive=False, inplace=False
 ):
@@ -60,11 +95,7 @@ def filter_invalid_coords(
             & (df[longitude_col] > -180)
         )
 
-    if not inplace:
-        return df[mask]
-    else:
-        df.mask(~mask, inplace=True)
-        df.dropna(inplace=True)
+    return filter_out_entries(df, mask, True, inplace)
 
 
 def filter_duplicates(df, columns, group_size, inplace=False):
@@ -94,12 +125,9 @@ def filter_duplicates(df, columns, group_size, inplace=False):
     # groups / filters suspected events
     suspect_df = df.groupby(by=columns).filter(lambda x: len(x) >= group_size)
     suspect_mask = df.isin(suspect_df)
+    suspect_mask = np.all(suspect_mask, axis=1)
 
-    if not inplace:
-        return df[~suspect_mask].dropna(how="all")
-    else:
-        df.mask(suspect_mask, inplace=True)
-        df.dropna(how="all", inplace=True)
+    return filter_out_entries(df, suspect_mask, False, inplace)
 
 
 def filter_poor_geolocational_data(
@@ -113,6 +141,10 @@ def filter_poor_geolocational_data(
     """
     Filters latitude and longitude of a DataFrame that contain poor geolocational quality.
 
+    Parameters
+    ----------
+    df : pd.DataFrame
+        The DataFrame to filter
     latitude_col : str
         The name of the column that contains latitude values
     longitude_col : str
@@ -148,10 +180,4 @@ def filter_poor_geolocational_data(
         df[mgrs_longitude_col].to_numpy(),
     )
 
-    filtered_df = df[~bad_data]
-
-    if not inplace:
-        return filtered_df
-    else:
-        df.mask(~df.isin(filtered_df), inplace=True)
-        df.dropna(how="all", inplace=True)
+    return filter_out_entries(df, bad_data, False, inplace)
