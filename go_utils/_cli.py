@@ -6,7 +6,6 @@ import pandas as pd
 
 from go_utils import lc, mhm
 from go_utils.download import convert_dates_to_datetime, get_api_data
-from go_utils.geoenrich import get_country_api_data
 from go_utils.photo_download import download_lc_photos, download_mhm_photos
 
 protocol_map = {"mosquito": "mosquito_habitat_mapper", "landcover": "land_covers"}
@@ -23,16 +22,6 @@ def add_download_args(parser):
         "--end",
         "-e",
         help="End date (if you want data from the api, so don't specify -i)",
-    )
-    parser.add_argument(
-        "--countries",
-        "-co",
-        help="Desired Countries separated by commas (if you want data from the api, so don't specify -i)",
-    )
-    parser.add_argument(
-        "--regions",
-        "-r",
-        help="Desired Regions separated by commas (if you want data from the api, so don't specify -i)",
     )
     parser.add_argument(
         "--box",
@@ -57,17 +46,8 @@ def download_data(protocol, args):
             "max_lon": coords[3],
         }
         func_args["latlon_box"] = box
-    if args.countries:
-        func_args["countries"] = [
-            country.strip() for country in args.countries.split(",")
-        ]
-    if args.regions:
-        func_args["regions"] = [region.strip() for region in args.regions.split(",")]
 
-    if "countries" in func_args or "regions" in func_args:
-        df = get_country_api_data(**func_args)
-    else:
-        df = get_api_data(**func_args)
+    df = get_api_data(**func_args)
 
     return df
 

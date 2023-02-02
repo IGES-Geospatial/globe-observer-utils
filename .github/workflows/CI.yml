@@ -19,7 +19,7 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Build
-      run: | 
+      run: |
         pip install --upgrade build
         pip install --upgrade wheel
         python -m build
@@ -32,14 +32,10 @@ jobs:
         pytest -vv --cov-config=.coveragerc --cov=go_utils go_utils/tests/ --cov-fail-under=97 --no-cov-on-fail
         pytest -vv --nbmake "./notebooks"
     - name: Run CLI Scripts
-      run: | 
+      run: |
         mhm-download -s "2021-05-01" -e "2021-05-31" -o MHM_Regular_Test.csv
         mhm-download -s "2017-06-01" -e "2021-05-31" -o MHM_Regular_Test.csv
         lc-download -s "2021-05-01" -e "2021-05-31" -o LC_Regular_Test.csv
         lc-download -s "2017-06-01" -e "2021-05-31" -o LC_Regular_Test.csv
-        mhm-download -s "2021-05-01" -e "2021-05-31" -c "United States" -o MHM_Country_Test.csv
-        mhm-download -s "2017-06-01" -e "2021-05-31" -c "United States" -o MHM_Country_Test.csv
-        lc-download -s "2021-05-01" -e "2021-05-31" -c "United States" -o LC_Country_Test.csv
-        lc-download -s "2017-06-01" -e "2021-05-31" -c "United States" -o LC_Country_Test.csv
         mhm-photo-download go_utils/tests/sample_data/mhm_small.csv test_photos -a
         lc-photo-download go_utils/tests/sample_data/lc_small.csv test_photos -a

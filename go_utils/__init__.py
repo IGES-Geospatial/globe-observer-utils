@@ -37,12 +37,6 @@ You can use `--out` or `-o` followed by a file path to specify the output path o
 #### Start and End Dates
 You can use `--start` or `-s` followed by a date in YYYY-MM-DD form to specify the start date. Similarly, you can use `--end` or `-e` to specify the end date.
 
-#### Countries
-You can use `--countries` or `-co` followed by a list of countries separated by commas to specify a download of specific country data. For example `-co "Brazil, Argentina"` would only download data from Brazil and Argentina.
-
-#### Regions
-You can use `--regions` or `-r` followed by a list of regions separated by commas to specify a download of specific GLOBE region data. For example `-r "North America"` would download data from North America. See the region dictionary to see the countries that comprise each GLOBE Region.
-
 #### Bounding Box
 You can use `--box` or `-b` followed by the coordinates of your bounding box in this format: `min latitude, min longitude, max latitude, max longitude`
 
