@@ -97,6 +97,7 @@ setup(
     setup_requires=["pytest-runner"],
     tests_require=["pytest"],
     install_requires=[
+        "setuptools<66",
         "numpy>=1.19.0",
         "pandas>=1.1.5",
         "requests>=2.23.0",

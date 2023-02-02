@@ -20,8 +20,6 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Build
       run: |
-        pip install --upgrade pip
-        pip install --upgrade setuptools
         pip install --upgrade build
         pip install --upgrade wheel
         python -m build
